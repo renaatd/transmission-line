@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "none",
+    "moduleResolution": "node",
+    /* "allowJs": true, */
+    "outDir": "script",
+    /* "outFile": "script/transmission-line-numerical.js", */
+    "removeComments": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2015"
+  },
+  "include": [
+    "typescript"
+  ]
+}
