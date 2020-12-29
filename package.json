@@ -2,7 +2,6 @@
   "name": "transmission-line",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "private": true,
   "dependencies": {
     "vue": "^2.6.12"
@@ -10,7 +9,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc",
+    "tsc": "tsc"
   },
   "author": "",
   "license": "MIT"
