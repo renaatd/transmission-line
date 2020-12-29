@@ -3,8 +3,8 @@
     "module": "none",
     "moduleResolution": "node",
     /* "allowJs": true, */
-    "outDir": "script",
-    /* "outFile": "script/transmission-line-numerical.js", */
+    /* "outDir": "script", */
+    "outFile": "script/transmission_line_numerical.js",
     "removeComments": true,
     "sourceMap": true,
     "strict": true,
