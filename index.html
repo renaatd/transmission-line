@@ -104,10 +104,11 @@
             resistance R<sub>load</sub> or capacitance C<sub>load</sub>.</p>
           <p>Fill in the different parameters, and click the button to start an animation of a wave going back and forth
             between generator and load.</p>
-          <p>The simulation time step depends only on line parameters,
-          not on load capacitance or generator period. Increase the number of segments if the
-          simulation time step is too small compared to Z0 x C or the
-          generator period and rise time.</p>
+	  <p>The simulation time step is exactly the Courant limit. It depends
+	  only on parameters l, v, and nx, not on load capacitance or generator period.
+	  Increase the number of segments if the simulation time step is too
+	  small compared to the time constant of the load, Z0 x Cload, or the
+	  generator period and rise time.</p>
 
           <table class="table table-striped">
             <thead>
