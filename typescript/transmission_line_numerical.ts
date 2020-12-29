@@ -11,14 +11,10 @@ function roundX(x : number) : number
 }
 
 /* ===============
-   Simulation control
+   Simulation model
    =============== */
 let model = new TlSim();
 model.log = uiLogMessage;
-
-function requestStopAnimation() {
-    app.animationIsRunning = false;
-}
 
 /* ===============
    UI updates 
@@ -177,13 +173,12 @@ function uiRescaleCharts() {
 }
 
 function uiStartAnimation() {
-    // even if the animation is running: reset all parameters, forcing a restart of the animation
     uiResetLog();
+    // setting startTimeAnimation to undefined forces a reset of the simulation, even if it is running
     startTimeAnimation = undefined;
     frameCount = 0;
 
     if (!app.animationIsRunning) {
-        app.animationIsRunning = true;
         window.requestAnimationFrame(uiAnimationStep);
     }
 }
@@ -202,8 +197,7 @@ function uiAnimationStep(timestamp: number) {
             model.updateSimulation(elapsedWall);
         }
         if (elapsedWall > model.tStopWall) {
-            uiLogMessage(`Stopping animation after ${model.tStopWall} s...`)
-            requestStopAnimation();
+            app.animationIsRunning = false;
         }
         frameCount++;
     }
@@ -214,7 +208,7 @@ function uiAnimationStep(timestamp: number) {
         window.requestAnimationFrame(uiAnimationStep);
     } else {
         uiUpdateTerminalsChart();
-        uiLogMessage("Animation stopped");
+        uiLogMessage(`Animation stopped after ${elapsedWall.toFixed(1)} s.`);
         let frameRateFps = frameCount / elapsedWall;
         uiLogMessage(`Frame rate: ${frameRateFps.toFixed(1)} fps`);
     }
@@ -295,12 +289,12 @@ var appClass = Vue.extend({
   },
   methods: {
     startAnimation: function() { uiStartAnimation(); },
-    stopAnimation: function() { requestStopAnimation(); },
+    stopAnimation: function() { this.animationIsRunning = false; },
     showFinal: function() { uiShowFinal(); },
     updateParameters: function() {
         if (this.animationIsRunning) {
             uiLogMessage("Stopping animation because of parameter change...");
-            requestStopAnimation();
+            this.animationIsRunning = false;
         }
 
         if (this.paramsBroken) {

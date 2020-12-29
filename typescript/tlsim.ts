@@ -26,7 +26,7 @@ class TlSim {
     tStopSim: number = 100e-9; // [s] end time simulation, in simulation time
     tStopWall: number = 10.0; // [s] end time simulation, in wall clock time
 
-    generator: (t: number) => number = this.generator_step;
+    generate: (t: number) => number = this.generateStep;
     updateLoad: () => void = this.updateLoadR;
 
 /*  ===============
@@ -75,7 +75,7 @@ class TlSim {
         this.voltages = Array(this.ndz+1).fill(0.0);
         this.currents = Array(this.ndz).fill(0.0);
         this.currentLoad = 0.0;
-        this.vGenPrev = this.generator(0.0);
+        this.vGenPrev = this.generate(0.0);
         this.stepsDone = 0;
 
         this.noTimeSteps = Math.floor(this.tStopSim / this.dt);
@@ -101,7 +101,7 @@ class TlSim {
         return true;
     }
 
-    generator_step(simTime: number) {
+    generateStep(simTime: number) {
         let relTimestamp = simTime % this.tPeriod;
         if (relTimestamp < this.tRise) {
             return relTimestamp / this.tRise;
@@ -114,12 +114,12 @@ class TlSim {
         return 0.0;
     }
 
-    generator_sine(simTime: number) {
+    generateSine(simTime: number) {
         return Math.sin(2.0 * Math.PI * simTime / this.tPeriod);
     }
 
     set generatorIsSine(isSine : boolean) {
-        this.generator = isSine ? this.generator_sine : this.generator_step;
+        this.generate = isSine ? this.generateSine : this.generateStep;
     }
 
     updateLoadR() {
@@ -150,7 +150,7 @@ class TlSim {
 
             // boundary conditions generator / load
             // generator: see "Analysis of multiconductor transmission lines", 2nd ed, Paul R. Clayton, 2008, equation 8.81a
-            let vGenNow = this.generator(t_simulation);
+            let vGenNow = this.generate(t_simulation);
             let vgenerator_sum = this.vGenPrev + vGenNow;
             let factor = this.dz / this.dt * this.Rg * this.cUnit;
             this.voltages[0] = ((factor - 1.0) * this.voltages[0] 

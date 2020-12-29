@@ -74,7 +74,7 @@
             <div class="form-group"><label for="twall">t<sub>wall</sub> - duration, wall clock time
                 [s]</label><input class="form-control" v-model.number="tStopWall" id="twall" type="number"></div>
           </form>
-          <button class="btn btn-primary" v-bind:disabled="animationIsRunning || paramsBroken" v-on:click="startAnimation">Start animation</button>
+          <button class="btn btn-primary" v-bind:disabled="paramsBroken" v-on:click="startAnimation">Start animation</button>
           <button class="btn btn-primary" v-bind:disabled="!animationIsRunning" v-on:click="stopAnimation">Stop animation</button>
           <button class="btn btn-primary" v-bind:disabled="animationIsRunning || paramsBroken" v-on:click="showFinal">Show final result</button>
           <div v-if="paramsBroken">Warning: invalid parameters found !</div>
