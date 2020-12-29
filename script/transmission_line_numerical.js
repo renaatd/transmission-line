@@ -13,7 +13,7 @@ class TlSim {
         this.ndz = 400;
         this.tStopSim = 100e-9;
         this.tStopWall = 10.0;
-        this.generator = this.generator_step;
+        this.generate = this.generateStep;
         this.updateLoad = this.updateLoadR;
         this.dz = -1;
         this.dt = -1;
@@ -42,7 +42,7 @@ class TlSim {
         this.voltages = Array(this.ndz + 1).fill(0.0);
         this.currents = Array(this.ndz).fill(0.0);
         this.currentLoad = 0.0;
-        this.vGenPrev = this.generator(0.0);
+        this.vGenPrev = this.generate(0.0);
         this.stepsDone = 0;
         this.noTimeSteps = Math.floor(this.tStopSim / this.dt);
         this.timeSteps = Array(this.noTimeSteps);
@@ -62,7 +62,7 @@ class TlSim {
         this.log('Animation started');
         return true;
     }
-    generator_step(simTime) {
+    generateStep(simTime) {
         let relTimestamp = simTime % this.tPeriod;
         if (relTimestamp < this.tRise) {
             return relTimestamp / this.tRise;
@@ -76,11 +76,11 @@ class TlSim {
         }
         return 0.0;
     }
-    generator_sine(simTime) {
+    generateSine(simTime) {
         return Math.sin(2.0 * Math.PI * simTime / this.tPeriod);
     }
     set generatorIsSine(isSine) {
-        this.generator = isSine ? this.generator_sine : this.generator_step;
+        this.generate = isSine ? this.generateSine : this.generateStep;
     }
     updateLoadR() {
         let factor = this.dz / this.dt * this.Rl * this.cUnit;
@@ -102,7 +102,7 @@ class TlSim {
         for (; this.stepsDone < stepsLimit; this.stepsDone++) {
             const t_simulation = this.stepsDone * this.dt;
             this.timeSteps[this.stepsDone] = t_simulation;
-            let vGenNow = this.generator(t_simulation);
+            let vGenNow = this.generate(t_simulation);
             let vgenerator_sum = this.vGenPrev + vGenNow;
             let factor = this.dz / this.dt * this.Rg * this.cUnit;
             this.voltages[0] = ((factor - 1.0) * this.voltages[0]
@@ -133,9 +133,6 @@ function roundX(x) {
 }
 let model = new TlSim();
 model.log = uiLogMessage;
-function requestStopAnimation() {
-    app.animationIsRunning = false;
-}
 let chartWave;
 let chartWaveData;
 let chartTerminals;
@@ -279,7 +276,6 @@ function uiStartAnimation() {
     startTimeAnimation = undefined;
     frameCount = 0;
     if (!app.animationIsRunning) {
-        app.animationIsRunning = true;
         window.requestAnimationFrame(uiAnimationStep);
     }
 }
@@ -297,8 +293,7 @@ function uiAnimationStep(timestamp) {
             model.updateSimulation(elapsedWall);
         }
         if (elapsedWall > model.tStopWall) {
-            uiLogMessage(`Stopping animation after ${model.tStopWall} s...`);
-            requestStopAnimation();
+            app.animationIsRunning = false;
         }
         frameCount++;
     }
@@ -308,7 +303,7 @@ function uiAnimationStep(timestamp) {
     }
     else {
         uiUpdateTerminalsChart();
-        uiLogMessage("Animation stopped");
+        uiLogMessage(`Animation stopped after ${elapsedWall.toFixed(1)} s.`);
         let frameRateFps = frameCount / elapsedWall;
         uiLogMessage(`Frame rate: ${frameRateFps.toFixed(1)} fps`);
     }
@@ -383,12 +378,12 @@ var appClass = Vue.extend({
     },
     methods: {
         startAnimation: function () { uiStartAnimation(); },
-        stopAnimation: function () { requestStopAnimation(); },
+        stopAnimation: function () { this.animationIsRunning = false; },
         showFinal: function () { uiShowFinal(); },
         updateParameters: function () {
             if (this.animationIsRunning) {
                 uiLogMessage("Stopping animation because of parameter change...");
-                requestStopAnimation();
+                this.animationIsRunning = false;
             }
             if (this.paramsBroken) {
                 this.lUnit = NaN;
